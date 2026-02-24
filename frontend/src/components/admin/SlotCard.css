@@ -1,0 +1,168 @@
+/**
+ * SlotCard.css
+ * Styles for individual slot card component
+ */
+
+.slot-card {
+  background-color: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.slot-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-color);
+}
+
+.slot-card-inactive {
+  opacity: 0.7;
+  background-color: var(--bg-tertiary);
+}
+
+/* Card Header */
+.slot-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.slot-card-title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.slot-card-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  word-break: break-word;
+}
+
+.slot-card-status {
+  display: inline-block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+}
+
+.status-active {
+  background-color: var(--success-bg);
+  color: var(--success-color);
+}
+
+.status-inactive {
+  background-color: var(--gray-200);
+  color: var(--text-muted);
+}
+
+/* Menu Button */
+.slot-card-menu {
+  position: relative;
+}
+
+.slot-card-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap-target-min);
+  height: var(--tap-target-min);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: var(--font-size-xl);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.slot-card-menu-btn:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--text-inverse);
+}
+
+/* Menu Dropdown */
+.slot-card-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 180px;
+  background-color: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  overflow: hidden;
+  margin-top: var(--spacing-xs);
+}
+
+.slot-card-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  padding: var(--spacing-md);
+  border: none;
+  background: none;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.slot-card-menu-item:hover {
+  background-color: var(--bg-secondary);
+}
+
+.slot-card-menu-item:first-child {
+  border-top: none;
+}
+
+.slot-card-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+  background: transparent;
+}
+
+/* Last Updated */
+.slot-card-updated {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin: 0 0 var(--spacing-lg) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* Actions */
+.slot-card-actions {
+  margin-top: var(--spacing-md);
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .slot-card {
+    padding: var(--spacing-md);
+  }
+
+  .slot-card-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .slot-card-menu-dropdown {
+    right: -10px;
+  }
+}

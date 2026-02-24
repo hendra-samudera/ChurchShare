@@ -1,0 +1,198 @@
+/**
+ * UploadArea.css
+ * Styles for upload area component
+ */
+
+.upload-area {
+  width: 100%;
+}
+
+/* Hidden file input */
+.upload-area-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Selected file display */
+.upload-area-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background-color: var(--success-bg);
+  border: 2px solid var(--success-color);
+  border-radius: var(--radius-lg);
+  min-height: var(--tap-target-lg);
+}
+
+.upload-area-file-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 1;
+  min-width: 0;
+}
+
+.upload-area-file-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.upload-area-file-details {
+  min-width: 0;
+}
+
+.upload-area-file-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  word-break: break-word;
+}
+
+.upload-area-file-size {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin: var(--spacing-xs) 0 0 0;
+}
+
+.upload-area-clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap-target-min);
+  height: var(--tap-target-min);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.upload-area-clear-btn:hover {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+  color: var(--text-inverse);
+}
+
+/* Upload prompt (no file selected) */
+.upload-area-prompt {
+  width: 100%;
+  min-height: 160px;
+  padding: var(--spacing-xl);
+  border: 3px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-area-prompt:hover:not(:disabled) {
+  border-color: var(--primary-color);
+  background-color: var(--info-bg);
+}
+
+.upload-area-prompt:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.upload-area-prompt:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.upload-area-prompt-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-align: center;
+}
+
+.upload-area-prompt-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.upload-area-prompt-text {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.upload-area-prompt-hint {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Error state */
+.upload-area-error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  background-color: var(--danger-bg);
+  border: 2px solid var(--danger-color);
+  border-radius: var(--radius-md);
+}
+
+.upload-area-error-icon {
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.upload-area-error-text {
+  font-size: var(--font-size-base);
+  color: var(--danger-color);
+  margin: 0;
+  flex: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .upload-area-prompt {
+    min-height: 140px;
+    padding: var(--spacing-lg);
+  }
+
+  .upload-area-prompt-icon {
+    font-size: 2.5rem;
+  }
+
+  .upload-area-prompt-text {
+    font-size: var(--font-size-base);
+  }
+
+  .upload-area-selected {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .upload-area-file-info {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .upload-area-clear-btn {
+    align-self: center;
+  }
+}
