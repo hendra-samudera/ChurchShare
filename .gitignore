@@ -1,39 +1,59 @@
-# ===========================================
+# =============================================================================
 # ChurchShare .gitignore
-# Monorepo: Java Spring Boot + React
-# ===========================================
+# Comprehensive ignore rules for backend, frontend, and Docker
+# =============================================================================
 
-# ===========================================
+# -----------------------------------------------------------------------------
+# Environment & Secrets
+# -----------------------------------------------------------------------------
+.env
+.env.local
+.env.*.local
+*.env
+!/.env.example
+
+# -----------------------------------------------------------------------------
 # IDE & Editor
-# ===========================================
+# -----------------------------------------------------------------------------
+# IntelliJ IDEA
 .idea/
 *.iml
 *.ipr
 *.iws
+out/
+
+# VS Code
 .vscode/
+*.code-workspace
+.history/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# NetBeans
+nbproject/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Vim
 *.swp
 *.swo
 *~
-.project
-.classpath
-.settings/
-.factorypath
 
-# ===========================================
-# Java / Spring Boot
-# ===========================================
-# Compiled class files
-*.class
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
 
-# Log files
-*.log
-
-# Package files
-*.jar
-*.war
-*.ear
-*.nar
-
+# -----------------------------------------------------------------------------
+# Backend (Maven/Java)
+# -----------------------------------------------------------------------------
 # Maven
 target/
 pom.xml.tag
@@ -46,76 +66,88 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
-# Gradle
+# Gradle (if used)
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# JVM crash logs
+hs_err_pid*
+replay_pid*
+
+# JPA/Hibernate
+hibernate.properties
+
 # Spring Boot
 spring-boot-devtools.properties
 
-# ===========================================
-# React / Node.js
-# ===========================================
+# -----------------------------------------------------------------------------
+# Frontend (Angular/Node.js)
+# -----------------------------------------------------------------------------
 # Dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 package-lock.json
-yarn.lock
 
-# Production build
-build/
+# Build output
 dist/
-.next/
-out/
+www/
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Angular
+.angular/
+.ng/
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# IDE for frontend
+*.sublime-project
+*.sublime-workspace
 
 # Testing
 coverage/
 .nyc_output/
 
-# Misc
-.eslintcache
-.stylelintcache
+# Temporary files
+tmp/
+temp/
 
-# ===========================================
+# -----------------------------------------------------------------------------
 # Docker
-# ===========================================
-# Docker volumes (keep configs)
-docker/nginx/ssl/
-*.pem
-*.key
-*.crt
-
-# Docker compose override
-docker-compose.override.yml
-docker-compose.*.yml
-
-# ===========================================
-# Database
-# ===========================================
-# SQL dumps
-*.sql
-!docker/postgres/init.sql
-
-# Database files
+# -----------------------------------------------------------------------------
+# Docker volumes (local data)
+postgres_data/
+minio_data/
 *.db
 *.sqlite
-*.sqlite3
 
-# ===========================================
-# OS Generated Files
-# ===========================================
+# Docker compose override (personal configs)
+docker-compose.override.yml
+docker-compose.local.yml
+
+# -----------------------------------------------------------------------------
+# Operating System
+# -----------------------------------------------------------------------------
 # macOS
 .DS_Store
 .AppleDouble
@@ -127,6 +159,12 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
 
 # Linux
 *~
@@ -134,69 +172,37 @@ $RECYCLE.BIN/
 .Trash-*
 .nfs*
 
-# ===========================================
-# Documentation & Temporary
-# ===========================================
-# Temporary files
-tmp/
-temp/
-*.tmp
-*.temp
+# -----------------------------------------------------------------------------
+# Application Specific
+# -----------------------------------------------------------------------------
+# Uploads (if stored locally during development)
+uploads/
+temp-uploads/
+
+# Keys & Certificates
+*.key
+*.pem
+*.crt
+*.cer
+*.p12
+*.pfx
+keystore.jks
+keystore.p12
 
 # Backup files
 *.bak
 *.backup
 *.old
 
-# Notes
-*.md~
-*.txt~
+# -----------------------------------------------------------------------------
+# Documentation
+# -----------------------------------------------------------------------------
+# Generated docs (if not committed)
+docs/generated/
+apidoc/
 
-# ===========================================
-# Secrets & Credentials
-# ===========================================
-# Never commit these
-*.pem
-*.key
-*.p12
-*.pfx
-secrets/
-credentials/
-*.credentials
-
-# ===========================================
-# Application Specific
-# ===========================================
-# Upload directories
-uploads/
-storage/
-files/
-
-# Cache directories
-.cache/
-__pycache__/
-*.pyc
-
-# ===========================================
-# Keep these files (exceptions)
-# ===========================================
-# Keep Docker init scripts
-!docker/**/init.sql
-!docker/**/init.sh
-
-# Keep example env files
-!.env.example
-!.env.template
-
-# Keep README files
-!README.md
-!**/README.md
-
-# Keep Dockerfiles
-!Dockerfile
-!**/Dockerfile
-
-# Keep configuration templates
-!*.example
-!*.template
-!*.sample
+# -----------------------------------------------------------------------------
+# Qwen Code (Project AI Assistant)
+# -----------------------------------------------------------------------------
+.qwen/agents/generated/
+.qwen/local/

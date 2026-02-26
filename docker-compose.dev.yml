@@ -1,0 +1,59 @@
+# Development override configuration
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: '3.8'
+
+services:
+  # =============================================================================
+  # Backend - Development Mode with Hot Reload
+  # =============================================================================
+  backend:
+    build:
+      target: development
+    volumes:
+      - ./backend/src:/app/src:ro
+      - ./backend/pom.xml:/app/pom.xml:ro
+      - ./backend/target:/app/target
+      - ~/.m2/repository:/root/.m2/repository
+    environment:
+      JAVA_TOOL_OPTIONS: >-
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+        -Dspring.profiles.active=dev
+        -Dspring.devtools.restart.enabled=true
+        -Dspring.devtools.livereload.enabled=true
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/churchshare
+      SPRING_DATASOURCE_USERNAME: churchshare
+      SPRING_DATASOURCE_PASSWORD: churchshare_dev_password
+      STORAGE_ENDPOINT: http://minio:9000
+      STORAGE_BUCKET: churchshare-dev
+      STORAGE_ACCESS_KEY: minioadmin
+      STORAGE_SECRET_KEY: minioadmin_secret
+      JWT_SECRET: churchshare_dev_jwt_secret_key_please_change_in_production
+    ports:
+      - "8080:8080"
+      - "5005:5005"  # Java debug
+    command: >
+      sh -c "mvn spring-boot:run -Dspring-boot.run.jvmArguments='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005'"
+
+  # =============================================================================
+  # Frontend - Development Mode with Hot Reload
+  # =============================================================================
+  frontend:
+    build:
+      target: development
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/angular.json:/app/angular.json:ro
+      - ./frontend/tsconfig.json:/app/tsconfig.json:ro
+      - ./frontend/tsconfig.app.json:/app/tsconfig.app.json:ro
+      - frontend_node_modules:/app/node_modules
+    environment:
+      NG_HOST: 0.0.0.0
+      NG_PORT: 4200
+      NG_POLL: 1000
+      NG_HMR: "true"
+    command: >
+      sh -c "npm run start -- --host 0.0.0.0 --port 4200 --poll 1000 --hmr"
+
+volumes:
+  frontend_node_modules:

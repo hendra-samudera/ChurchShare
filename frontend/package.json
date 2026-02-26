@@ -1,87 +1,53 @@
 {
   "name": "churchshare-frontend",
   "version": "1.0.0",
-  "private": true,
-  "description": "ChurchShare React Frontend - A modern church resource sharing platform",
+  "description": "Zero-download PDF sharing platform for church congregations",
+  "license": "MIT",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:coverage": "react-scripts test --coverage --watchAll=false",
-    "test:ci": "react-scripts test --coverage --watchAll=false --ci",
-    "eject": "react-scripts eject",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,json}\"",
-    "e2e": "playwright test",
-    "e2e:headed": "playwright test --headed",
-    "e2e:ui": "playwright test --ui",
-    "e2e:mobile": "playwright test --project='Mobile Chrome'",
-    "e2e:report": "playwright show-report",
-    "postinstall": "node -e \"console.log('PDF.js worker will be loaded from CDN for optimal compatibility')\""
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "lint": "ng lint",
+    "format": "prettier --write \"src/**/*.{ts,html,scss}\""
   },
+  "private": true,
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.0",
-    "react-scripts": "5.0.1",
-    "bootstrap": "^5.3.2",
-    "react-bootstrap": "^2.9.1",
-    "axios": "^1.6.2",
-    "@tanstack/react-query": "^5.12.2",
-    "react-hook-form": "^7.49.2",
-    "pdfjs-dist": "^3.11.174",
-    "react-pdf": "^7.7.0"
+    "@angular/animations": "^21.0.0",
+    "@angular/common": "^21.0.0",
+    "@angular/compiler": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.0",
+    "@angular/platform-browser": "^21.0.0",
+    "@angular/platform-browser-dynamic": "^21.0.0",
+    "@angular/router": "^21.0.0",
+    "pdfjs-dist": "^4.0.379",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.6.0",
+    "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.40.0",
-    "@testing-library/jest-dom": "^6.1.5",
-    "@testing-library/react": "^14.1.2",
-    "@testing-library/user-event": "^14.5.1",
-    "@axe-core/playwright": "^4.8.2",
-    "eslint": "^8.55.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-testing-library": "^6.2.0",
-    "eslint-plugin-jest": "^27.6.0",
-    "prettier": "^3.1.1"
+    "@angular-devkit/build-angular": "^21.0.0",
+    "@angular/cli": "^21.0.0",
+    "@angular/compiler-cli": "^21.0.0",
+    "@types/node": "^20.10.0",
+    "typescript": "~5.9.0",
+    "vitest": "^2.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "jsdom": "^24.0.0",
+    "@angular-eslint/builder": "^21.0.0",
+    "@angular-eslint/eslint-plugin": "^21.0.0",
+    "@angular-eslint/eslint-plugin-template": "^21.0.0",
+    "@angular-eslint/template-parser": "^21.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!src/**/*.d.ts",
-      "!src/index.js",
-      "!src/reportWebVitals.js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "functions": 70,
-        "lines": 70,
-        "statements": 70
-      }
-    },
-    "coverageReporters": [
-      "text",
-      "lcov",
-      "html"
-    ],
-    "coverageDirectory": "coverage"
-  },
-  "notes": {
-    "pdfjs-worker": "PDF.js worker is loaded from CDN (cdnjs.cloudflare.com) in PdfViewer.jsx for optimal mobile browser compatibility. This avoids bundling issues with Create React App.",
-    "testing": "Tests use React Testing Library for component tests and Playwright for E2E tests. Run 'npm test' for unit tests and 'npm run e2e' for E2E tests."
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
   }
 }

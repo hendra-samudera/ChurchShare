@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>ChurchShare - PDF Sharing for Church Congregations</title>
+  <base href="/" />
+
+  <!-- Viewport for mobile devices -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Zero-download PDF sharing platform for church congregations. Access liturgies, bulletins, and prayer guides without using phone storage." />
+  <meta name="keywords" content="church, PDF, sharing, liturgy, bulletin, prayer" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+  <!-- Load PDF.js globally before Angular bootstrap -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+  <script>
+    // Configure PDF.js worker - wait for pdfjsLib to be available
+    if (window['pdfjsLib']) {
+      window['pdfjsLib'].GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js';
+    } else {
+      // Fallback if PDF.js loads asynchronously
+      window.addEventListener('load', function() {
+        if (window['pdfjsLib']) {
+          window['pdfjsLib'].GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js';
+        }
+      });
+    }
+  </script>
+
+  <!-- Theme Color for mobile browsers -->
+  <meta name="theme-color" content="#1a73e8" />
+
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>

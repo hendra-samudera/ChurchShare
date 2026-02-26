@@ -1,266 +1,294 @@
 # ChurchShare
 
-A modern church resource sharing platform built with React and Spring Boot.
+**Memory-Light PDF Sharing for Church Congregations**
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Java](https://img.shields.io/badge/Java-17-orange)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3-brightgreen)
-![React](https://img.shields.io/badge/React-18-blue)
-
-## Project Overview
-
-ChurchShare is a comprehensive platform designed to facilitate resource sharing, event management, and community engagement for churches. The application provides a seamless experience for church administrators and members to share resources, manage events, and stay connected.
-
-## Quick Links
-
-- **[Deployment Guide](./DEPLOYMENT.md)** - Complete production deployment instructions
-- **[Testing Guide](./TESTING.md)** - Testing procedures and guidelines
-- **[Architecture](#architecture)** - System architecture overview
+A zero-download PDF sharing platform designed specifically for church communities, eliminating storage and version confusion for elderly congregation members.
 
 ---
 
-## Production Quickstart
+## 📋 Overview
 
-Deploy ChurchShare to production in minutes:
+ChurchShare solves two critical problems for church communities:
 
-```bash
-# 1. Clone repository
-git clone https://github.com/your-org/ChurchShare.git
-cd ChurchShare
+1. **Storage Overload** — Elderly users with low-spec phones frequently see "Storage Full" errors when downloading PDFs from WhatsApp
+2. **Version Chaos** — When PDFs are corrected, multiple versions circulate in chat, causing confusion
 
-# 2. Configure environment
-cp .env.production .env
-# Edit .env with your production values
+### Solution
 
-# 3. Deploy with one command
-./scripts/deploy.sh
-```
-
-For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+- **Zero-Download Viewing** — PDFs render directly in the mobile browser via PDF.js. No file is saved to the device.
+- **Hot-Swap Links** — Each document has one permanent URL. When an admin replaces a PDF, the link automatically serves the new version.
 
 ---
 
-## Architecture
+## 🛠️ Tech Stack
 
-### System Architecture
-
-```
-                                    ┌─────────────────┐
-                                    │   Cloudflare    │
-                                    │      R2         │
-                                    │   (Storage)     │
-                                    └────────┬────────┘
-                                             │
-                                             │ HTTPS
-                                             │
-┌──────────┐     HTTPS     ┌─────────┐     ┌─▼─────────┐
-│  Users   │──────────────▶│  Nginx  │────▶│  Backend  │
-│          │   Port 443    │ (Proxy) │     │(Spring Boot)
-└──────────┘               └────┬────┘     └─────┬─────┘
-                               │                 │
-                         ┌─────▼─────┐     ┌─────▼─────┐
-                         │  Static   │     │PostgreSQL │
-                         │  Files    │     │ Database  │
-                         └───────────┘     └───────────┘
-```
-
-### Technology Stack
-
-#### Frontend
-- **React 18** - Modern UI library
-- **Bootstrap 5** - Responsive CSS framework
-- **React Router** - Client-side routing
-- **Axios** - HTTP client for API calls
-- **React Hook Form** - Form management
-- **React Query** - Server state management
-
-#### Backend
-- **Java 17** - Core language
-- **Spring Boot 3** - Application framework
-- **Spring Security** - Authentication & Authorization
-- **Spring Data JPA** - Database ORM
-- **PostgreSQL 15** - Primary database
-- **JWT** - Token-based authentication
-- **Cloudflare R2** - Object storage for media files
-- **Flyway** - Database migrations
-
-#### Infrastructure
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-- **Nginx** - Reverse proxy & SSL termination
-- **Let's Encrypt** - Free SSL certificates
+| Layer | Technology | Version |
+|-------|------------|---------|
+| **Backend** | Java + Spring Boot | 21 + 4.0.3 |
+| **Frontend** | Angular + TypeScript | v21 + 5.9+ |
+| **Database** | PostgreSQL | 15+ |
+| **Storage** | Cloudflare R2 (MinIO for local) | — |
+| **ORM** | Spring Data JPA + Hibernate | 7.1.x |
+| **Migrations** | Flyway | 11.x |
+| **Auth** | Spring Security + JWT | 7.0.x + 0.12.x |
+| **PDF Rendering** | PDF.js | Latest |
 
 ---
 
-## Success Metrics (from PRD)
-
-| Metric | Target | Description |
-|--------|--------|-------------|
-| **Uptime** | 99.9% | System availability |
-| **Response Time** | < 200ms | API response time (p95) |
-| **Concurrent Users** | 1000+ | Supported simultaneous users |
-| **File Upload** | 20MB | Maximum file size |
-| **Backup RPO** | 24 hours | Recovery Point Objective |
-| **Backup RTO** | 1 hour | Recovery Time Objective |
-
----
-
-## Local Development
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Docker & Docker Compose
-- Java 17+ (for local backend development)
-- Node.js 18+ (for local frontend development)
+- Docker & Docker Compose (v2.0+)
+- Git
 
-### Quick Start
+### 1. Clone the Repository
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/your-org/ChurchShare.git
+git clone https://github.com/your-org/churchshare.git
 cd ChurchShare
-
-# 2. Copy environment template
-cp .env.example .env
-
-# 3. Start with Docker Compose
-docker-compose up -d --build
-
-# 4. View logs
-docker-compose logs -f
 ```
 
-### Access Points
+### 2. Configure Environment
 
-| Service | URL | Description |
+```bash
+cp .env.example .env
+# Edit .env with your settings (optional for local dev)
+```
+
+### 3. Start All Services
+
+```bash
+# Production-like setup
+docker-compose up -d
+
+# Development mode with hot reload
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+
+### 4. Access the Application
+
+| Service | URL | Credentials |
 |---------|-----|-------------|
-| Frontend | http://localhost:80 | Web application |
-| Backend API | http://localhost:8080 | REST API |
-| PostgreSQL | localhost:5432 | Database |
+| **Frontend** | http://localhost:4200 | — |
+| **Backend API** | http://localhost:8080 | — |
+| **Backend Health** | http://localhost:8080/actuator/health | — |
+| **MinIO Console** | http://localhost:9001 | minioadmin / minioadmin_secret |
+| **PostgreSQL** | localhost:5432 | churchshare / churchshare_dev_password |
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 ChurchShare/
-├── frontend/                    # React application
-│   ├── public/                  # Static assets
-│   └── src/                     # Source code
-├── backend/                     # Spring Boot application
-│   ├── src/                     # Java source code
-│   │   └── main/
-│   │       ├── java/            # Java packages
-│   │       └── resources/       # Configuration files
-│   └── Dockerfile               # Backend Docker config
-├── docker/                      # Docker configurations
-│   ├── nginx/                   # Nginx configuration
-│   │   ├── conf.d/              # Server configs
-│   │   └── ssl/                 # SSL certificates
-│   └── postgres/                # PostgreSQL init scripts
-├── scripts/                     # Deployment scripts
-│   ├── deploy.sh                # One-command deployment
-│   ├── backup.sh                # Database backup
-│   ├── restore.sh               # Database restore
-│   ├── logs.sh                  # Log viewer
-│   └── init-r2-bucket.sh        # R2 setup
-├── docker-compose.yml           # Development config
-├── docker-compose.prod.yml      # Production config
-├── .env.example                 # Environment template
-├── .env.production              # Production template
-├── DEPLOYMENT.md                # Deployment guide
-├── TESTING.md                   # Testing guide
-└── README.md                    # This file
+├── backend/                    # Spring Boot application
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/          # Java source code
+│   │   │   ├── resources/
+│   │   │   │   ├── application.yml
+│   │   │   │   └── db/        # Flyway migrations
+│   │   └── test/              # Unit & integration tests
+│   ├── pom.xml
+│   └── Dockerfile
+├── frontend/                   # Angular application
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── admin/         # Admin dashboard components
+│   │   │   ├── public-viewer/ # PDF viewer component
+│   │   │   ├── services/      # Angular services
+│   │   │   └── shared/        # Shared components & utilities
+│   │   ├── assets/
+│   │   ├── environments/
+│   │   └── index.html
+│   ├── angular.json
+│   ├── package.json
+│   └── Dockerfile
+├── docker/
+│   ├── Dockerfile.backend
+│   ├── Dockerfile.frontend
+│   ├── nginx.conf
+│   └── init-postgres/
+├── docker-compose.yml
+├── docker-compose.dev.yml
+├── .env.example
+└── README.md
 ```
 
 ---
 
-## Docker Services
+## 🧪 Development
 
-| Service | Port | Description |
-|---------|------|-------------|
-| nginx | 80, 443 | Reverse proxy & static files |
-| backend | 8080 | Spring Boot API server |
-| postgres | 5432 | PostgreSQL database |
-
----
-
-## Deployment Scripts
-
-| Script | Description |
-|--------|-------------|
-| `./scripts/deploy.sh` | One-command production deployment |
-| `./scripts/backup.sh` | Database backup with compression |
-| `./scripts/restore.sh` | Restore database from backup |
-| `./scripts/logs.sh` | View and filter service logs |
-| `./scripts/init-r2-bucket.sh` | Configure Cloudflare R2 bucket |
-
----
-
-## Environment Variables
-
-### Required Variables
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `POSTGRES_USER` | Database username | churchshare |
-| `POSTGRES_PASSWORD` | Database password | (generate strong password) |
-| `POSTGRES_DB` | Database name | churchshare_db |
-| `JWT_SECRET` | JWT signing secret | (generate with openssl) |
-| `R2_ENDPOINT` | Cloudflare R2 endpoint | https://account.r2.cloudflarestorage.com |
-| `R2_ACCESS_KEY` | R2 access key | (from Cloudflare) |
-| `R2_SECRET_KEY` | R2 secret key | (from Cloudflare) |
-| `R2_BUCKET_NAME` | R2 bucket name | churchshare-bucket |
-| `FRONTEND_URL` | Frontend URL | https://your-domain.com |
-| `SERVER_NAME` | Domain for SSL | your-domain.com |
-
-### Generate Secure Secrets
+### Backend Development
 
 ```bash
-# PostgreSQL password
-openssl rand -base64 32
+cd backend
 
-# JWT secret
-openssl rand -base64 64
+# Run with Maven
+mvn spring-boot:run
+
+# Run tests
+mvn test
+
+# Build JAR
+mvn clean package
+
+# Debug mode (port 5005)
+mvn spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+```
+
+### Frontend Development
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start dev server
+npm run start
+
+# Build for production
+npm run build -- --configuration production
+
+# Run tests
+npm run test
+```
+
+### Database Access
+
+```bash
+# Connect to PostgreSQL
+docker exec -it churchshare-postgres psql -U churchshare -d churchshare
+
+# View Flyway migration history
+docker exec -it churchshare-postgres psql -U churchshare -d churchshare -c "SELECT * FROM flyway_schema_history;"
+```
+
+### Storage Access (MinIO)
+
+```bash
+# Access MinIO web console
+open http://localhost:9001
+
+# Or use mc client
+docker exec -it churchshare-minio mc alias set myminio http://localhost:9000 minioadmin minioadmin_secret
+docker exec -it churchshare-minio mc ls myminio/churchshare-dev
 ```
 
 ---
 
-## Development Commands
+## 🔧 Common Commands
+
+### Docker Operations
 
 ```bash
-# Start all services (development)
+# Start all services
 docker-compose up -d
 
 # Stop all services
 docker-compose down
 
+# View logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Restart a service
+docker-compose restart backend
+
 # Rebuild and restart
 docker-compose up -d --build
 
-# View logs
-docker-compose logs -f [service-name]
+# Clean up (remove volumes)
+docker-compose down -v
+```
 
-# Access backend container
-docker exec -it churchshare-backend sh
+### Development Mode
 
-# Access database
-docker exec -it churchshare-postgres psql -U churchshare -d churchshare_db
+```bash
+# Start with hot reload
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
-# Production deployment
-./scripts/deploy.sh
+# Backend only (dev)
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up backend
 
-# Backup database
-./scripts/backup.sh
-
-# View logs
-./scripts/logs.sh -f
+# Frontend only (dev)
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up frontend
 ```
 
 ---
 
-## Contributing
+## 📊 API Documentation
+
+### Public Endpoints (No Auth)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/v1/slots/{slug}` | Get slot metadata |
+| `GET` | `/api/v1/slots/{slug}/file` | Stream PDF file |
+
+### Admin Endpoints (JWT Required)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/v1/admin/auth/login` | Admin login |
+| `GET` | `/api/v1/admin/slots` | List all slots |
+| `POST` | `/api/v1/admin/slots` | Create new slot |
+| `POST` | `/api/v1/admin/slots/{id}/upload` | Upload/replace PDF |
+
+---
+
+## 🧪 Testing
+
+### Backend Tests
+
+```bash
+# Run all tests
+mvn test
+
+# Run with coverage
+mvn clean test jacoco:report
+
+# Run specific test class
+mvn test -Dtest=SlotServiceTest
+```
+
+### Frontend Tests
+
+```bash
+# Run unit tests
+npm run test
+
+# Run with coverage
+npm run test -- --code-coverage
+
+# Run E2E tests
+npm run e2e
+```
+
+---
+
+## 🔐 Security Notes
+
+### For Production Deployment
+
+1. **Change all default passwords** in `.env`
+2. **Generate a strong JWT secret**: `openssl rand -base64 32`
+3. **Use HTTPS** (configure SSL termination at nginx or load balancer)
+4. **Switch from MinIO to Cloudflare R2** for storage
+5. **Enable Spring Security production profile**
+6. **Review Content-Security-Policy** in nginx.conf
+
+---
+
+## 📝 License
+
+[Specify your license here]
+
+---
+
+## 👥 Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -268,46 +296,8 @@ docker exec -it churchshare-postgres psql -U churchshare -d churchshare_db
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-### Development Workflow
-
-1. Create feature branch from `main`
-2. Make changes and test locally
-3. Run tests: `./mvnw test` (backend), `npm test` (frontend)
-4. Submit PR with description of changes
-5. Code review and merge
-
 ---
 
-## Security
+## 📞 Support
 
-- All passwords and secrets should be stored in environment variables
-- Use strong, unique passwords for production
-- Enable HTTPS with Let's Encrypt SSL certificates
-- Regular security updates for dependencies
-- JWT tokens with secure expiration settings
-
----
-
-## License
-
-This project is licensed under the MIT License.
-
----
-
-## Support
-
-For issues and questions:
-- Check [DEPLOYMENT.md](./DEPLOYMENT.md) for deployment troubleshooting
-- Check [TESTING.md](./TESTING.md) for testing procedures
-- Open an issue on the GitHub repository
-
----
-
-## Changelog
-
-### Version 1.0.0
-- Initial production release
-- Docker Compose deployment
-- Cloudflare R2 integration
-- SSL/TLS support
-- Automated backups
+For issues and questions, please open an issue on the GitHub repository.
