@@ -15,7 +15,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
           }
         </label>
       }
-      
+
       <input
         [id]="id()"
         [type]="type()"
@@ -25,13 +25,13 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
         [attr.aria-invalid]="error() ? 'true' : 'false'"
         [class.input--error]="error()"
         class="app-input" />
-      
+
       @if (error()) {
         <span [id]="id() + '-error'" class="error-message" role="alert">
           {{ error() }}
         </span>
       }
-      
+
       @if (helperText()) {
         <span [id]="id() + '-helper'" class="helper-text">
           {{ helperText() }}
@@ -66,13 +66,13 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
       background-color: var(--color-background);
       border: 2px solid var(--color-border);
       border-radius: var(--radius-md);
-      transition: border-color var(--transition-fast), 
+      transition: border-color var(--transition-fast),
                   box-shadow var(--transition-fast);
     }
 
     .app-input:focus {
       border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
       outline: none;
     }
 
@@ -81,7 +81,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
     }
 
     .app-input--error:focus {
-      box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.2);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
     }
 
     .error-message {

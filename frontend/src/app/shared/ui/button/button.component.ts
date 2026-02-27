@@ -30,7 +30,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger';
       align-items: center;
       justify-content: center;
       gap: var(--spacing-sm);
-      transition: background-color var(--transition-fast), 
+      transition: background-color var(--transition-fast),
                   transform var(--transition-fast),
                   border-color var(--transition-fast);
       white-space: nowrap;
@@ -38,7 +38,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger';
 
     .app-button--primary {
       background-color: var(--color-primary);
-      color: white;
+      color: var(--color-text-on-dark);
     }
 
     .app-button--primary:hover:not(:disabled) {
@@ -52,16 +52,16 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger';
     }
 
     .app-button--secondary:hover:not(:disabled) {
-      background-color: var(--color-border);
+      background-color: var(--color-border-light);
     }
 
     .app-button--danger {
       background-color: var(--color-error);
-      color: white;
+      color: var(--color-text-on-dark);
     }
 
     .app-button--danger:hover:not(:disabled) {
-      background-color: #b92b1f;
+      background-color: var(--color-primary-dark);
     }
 
     .app-button--full-width {

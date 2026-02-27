@@ -18,14 +18,19 @@ export const routes: Routes = [
         (m) => m.DashboardComponent
       ),
     // canActivate: [authGuard], // TODO: Implement auth guard
+    children: [
+      {
+        path: 'new-slot',
+        loadComponent: () =>
+          import('./admin/new-slot-page/new-slot-page.component').then(
+            (m) => m.NewSlotPageComponent
+          ),
+      },
+    ],
   },
   {
     path: 'admin/slots/create',
-    loadComponent: () =>
-      import('./admin/create-slot/create-slot.component').then(
-        (m) => m.CreateSlotComponent
-      ),
-    // canActivate: [authGuard],
+    redirectTo: 'admin/dashboard/new-slot',
   },
   {
     path: 'admin/upload/:slotId',

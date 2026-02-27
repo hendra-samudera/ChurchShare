@@ -24,6 +24,7 @@
       "@app/*": ["src/app/*"],
       "@shared/*": ["src/app/shared/*"],
       "@services/*": ["src/app/shared/services/*"],
+      "@models/*": ["src/app/shared/models/*"],
       "@environments/*": ["src/environments/*"]
     },
     "types": ["node"]

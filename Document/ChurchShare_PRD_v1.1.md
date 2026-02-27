@@ -4,10 +4,11 @@
 
 | Field | Details |
 |---|---|
-| **Document Version** | v1.0 |
-| **Date** | June 2025 |
+| **Document Version** | v1.1 |
+| **Date** | February 2026 |
 | **Author** | Senior Product Manager |
 | **Status** | Draft — Pending Stakeholder Review |
+| **Change Summary** | Section 4.3 fully revised — Admin Dashboard redesigned to modern card-based layout with sidebar navigation, summary stats, slot grid, and category tagging system |
 | **Target Audience** | Engineering, Design, Church Admin Stakeholders |
 
 ---
@@ -152,6 +153,12 @@ This is the single most important technical concept in ChurchShare. It must be u
 | FR-A06 | Admin can preview the document in-browser after upload before it goes live | Should Have |
 | FR-A07 | Admin can set an optional display title visible to viewers (e.g., "Sunday, 15 June 2025 — Morning Liturgy") | Should Have |
 | FR-A08 | Admin receives a one-time QR code per slot for printing on physical bulletins | Could Have |
+| **FR-A09** | **Admin can assign a category tag to each slot (e.g., Bulletin, Newsletter, Sermon Notes, Forms, Events, Announcements) for visual organization in the dashboard** | **Should Have** |
+| **FR-A10** | **Admin can add an optional short description to each slot (visible in the dashboard card)** | **Should Have** |
+| **FR-A11** | **Admin can set slot status to Active or Draft; Draft slots are not publicly accessible** | **Should Have** |
+| **FR-A12** | **Dashboard displays aggregate summary statistics: Total Slots, Active Slots, Slots with Files, Total Views** | **Should Have** |
+| **FR-A13** | **Admin can search and filter slots by name, category, and status from the dashboard** | **Should Have** |
+| **FR-A14** | **Dashboard supports both grid view and list view for slot display** | **Could Have** |
 
 ---
 
@@ -176,7 +183,7 @@ This is the single most important technical concept in ChurchShare. It must be u
 
 - **FR-AC01:** Admin access is protected by email/password login.
 - **FR-AC02:** Admin login must include a "Keep me logged in" option defaulted to ON, minimizing repeated authentication.
-- **FR-AC03:** Viewer URLs are public by default. No authentication is required to view shared documents.
+- **FR-AC03:** Viewer URLs are public by default. No authentication is required to view shared documents. Draft slots return a friendly unavailable message to public viewers.
 - **FR-AC04:** Church-level account controls which slots exist. One church = one admin account (expandable in v2 with multi-user roles).
 
 ---
@@ -243,14 +250,213 @@ Step 4 (optional): User taps large "Save to Phone" button only if desired.
 
 ### 4.3 Admin Dashboard UX Specification
 
-The admin panel prioritizes operational simplicity. An admin who manages one upload per week should be able to complete their task in under 2 minutes without any training documentation.
+The admin panel is designed for two audiences: the primary user (church volunteer managing weekly uploads) who needs frictionless task completion, and the secondary context (quick status overview on Sunday morning) which requires at-a-glance clarity. The interface is a modern, dense-but-scannable dashboard — not a simplified mobile-first form.
 
-#### Upload Flow
+---
 
-1. Admin logs in and lands on **"My Document Slots"** — a simple list with slot name, last updated timestamp, and a large **"Update File"** button per slot.
-2. Tapping "Update File" opens the device file picker directly. No intermediate screens.
-3. After a successful upload, the app shows a full-screen success state: document title, a preview thumbnail, and the permanent link with a large **"Copy Link"** button.
-4. The upload process must complete within **5 seconds** for files under 5 MB on a standard 4G connection.
+#### 4.3.1 Overall Layout
+
+The dashboard uses a **two-panel layout**: a fixed left sidebar for navigation, and a main content area with a top header bar.
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  SIDEBAR (fixed, dark)  │  HEADER BAR (top, light)          │
+│  ─────────────────────  │  ─────────────────────────────    │
+│  [Logo + Church Name]   │  [Breadcrumb]  [Bell] [Settings]  │
+│  [Church Tagline]       │  ─────────────────────────────    │
+│                         │  MAIN CONTENT AREA                │
+│  NAVIGATION             │  [Page title + subtitle]          │
+│  ● Dashboard            │  [+ New Slot button]              │
+│    Create Slot          │                                   │
+│    Upload Flow          │  [Summary Stats Row]              │
+│    Success              │                                   │
+│                         │  [Search] [Filter] [View Toggle]  │
+│  UPCOMING               │                                   │
+│  ✦ Smart Insights [Soon]│  [Slot Card Grid]                 │
+│                         │                                   │
+│  ─────────────────────  │                                   │
+│  [User Avatar + Name]   │                                   │
+│  [Admin role label]     │                                   │
+│  [Logout icon]          │                                   │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+#### 4.3.2 Sidebar Navigation
+
+**Visual design:** Dark background (near-black), white text and icons, red accent color for active states and branding elements.
+
+**Church identity block (top):** Displays a red square logo/avatar, the church name in bold white, and a small descriptor label (e.g., "Doc Manager"). This anchors the admin's context — especially important for multi-church deployments in future versions.
+
+**Navigation sections:**
+
+The sidebar is organized into named sections separated by subtle section labels:
+
+*NAVIGATION section* contains the primary task flows in logical order:
+- **Dashboard** — the slot overview (default landing page). Active state uses a red filled background with a right-side indicator bar.
+- **Create Slot** — leads to the slot creation form.
+- **Upload Flow** — leads directly to the file upload interface for an existing slot.
+- **Success** — a confirmation/receipt screen accessible for review.
+
+*UPCOMING section* contains roadmap features that are visible but not yet active. These items display a "Soon" badge in a muted accent color (e.g., amber/gold) to communicate future availability without creating confusion about whether they are broken.
+- **Smart Insights** — future analytics feature.
+
+**User block (bottom):** Pinned to the bottom of the sidebar. Displays the admin's avatar initials, full name (truncated if needed), role label ("Administrator"), and a logout/exit icon. This should never overlap with navigation items regardless of sidebar height.
+
+**Active state:** The active nav item has a filled red background, slightly rounded corners, and a brighter text weight. All inactive items are white with reduced opacity on hover.
+
+---
+
+#### 4.3.3 Header Bar
+
+The top header bar spans the full width of the main content area (excluding the sidebar).
+
+**Left:** Breadcrumb navigation showing the current section context (e.g., "Grace Community Church" when on the dashboard). Uses a document/building icon prefix.
+
+**Right:** Notification bell icon (with badge capability for future use) and a settings/gear icon. Both are icon-only, but sized at minimum 40×40px tap target. These are secondary controls and must not dominate the header visually.
+
+**No page title in the header** — the page title lives in the main content area below the header.
+
+---
+
+#### 4.3.4 Summary Statistics Row
+
+Immediately below the page title and subtitle, display a horizontal row of **four summary stat cards**. These give the admin an instant status snapshot without requiring them to read individual slot cards.
+
+| Card | Label | Value | Icon |
+|---|---|---|---|
+| 1 | Total Slots | Count of all slots | Document icon |
+| 2 | Active Slots | Count of slots with Active status | Green checkmark circle |
+| 3 | With Files | Count of slots that have a PDF uploaded | Upload/file icon |
+| 4 | Total Views | Cumulative viewer opens across all slots | Trending arrow icon |
+
+**Card design:** White background, light border, no colored accent. The metric value is displayed in a large bold number (28–32px). The label is displayed above the number in small secondary text. The icon is displayed in the top-right corner of the card in a muted accent color matching its semantic meaning (green for active, blue-teal for views, etc.).
+
+**Stat cards are read-only.** They are not clickable filters in v1.0, though they may become so in a later version.
+
+---
+
+#### 4.3.5 Slot Toolbar (Search, Filter, View Toggle)
+
+Between the stats row and the slot grid, a toolbar row provides three controls:
+
+**Search input (left, wide):** A text input with a magnifying glass icon placeholder labeled "Search slots…". Searches across slot name, description, and category tag in real time. The input should be wide enough to be usable without expanding — approximately 50% of the available width.
+
+**Category filter dropdown (center):** A dropdown labeled "All" by default. Filters the grid to show only slots of a selected category (e.g., Bulletin, Newsletter, Sermon Notes). The dropdown shows the category color indicator alongside each option name.
+
+**Status filter dropdown (center-right):** A dropdown labeled "All Status" by default. Filters to Active, Draft, or Archived slots.
+
+**View toggle (right):** Two icon buttons — a grid icon and a list icon — toggle between grid view (default) and list view. The active view icon appears filled/highlighted.
+
+**Results count:** Below the toolbar, a small secondary text label shows the current result count, e.g., "Showing 6 of 6 slots." This updates live with search and filter results.
+
+---
+
+#### 4.3.6 Slot Card Design (Grid View)
+
+Slots are displayed in a **3-column responsive card grid**. Each card represents one document slot and contains the following elements from top to bottom:
+
+**Status accent border (top edge):** A 3–4px colored top border on the card indicates the slot's status at a glance — green for Active, amber/orange for Draft. This provides immediate visual differentiation without relying solely on the text badge.
+
+**Card header row:** Displays a left-aligned document type icon (PDF icon in a soft tinted background circle), the slot title in bold, and a three-dot overflow menu icon (⋯) on the far right. The title is the admin-defined display name (e.g., "Weekly Bulletin"). Below the title, a truncated description line in secondary gray text provides context (e.g., "Sunday service order of worship and announ…").
+
+**Tag row:** A horizontal row of small pill-shaped tags. Each slot shows:
+- **Category tag** — color-coded by category (e.g., green for Bulletin, blue for Newsletter, purple for Sermon Notes, teal for Forms, orange for Events). The color is unique per category and consistent across all cards.
+- **Status badge** — "Active" in green with a dot prefix, or "Draft" in amber/orange with a clock/warning icon.
+- **PDF Ready badge** — displayed only when a file exists. Uses a neutral color (dark gray or similar) to distinguish it from the status badge. Hidden when no file is uploaded.
+
+**File information row:** When a file is uploaded, displays the filename, file size, and last updated date in small secondary text. A view count (eye icon + number) is right-aligned on the same row. Example: `KIA Galvinsky.pdf · 0.1 MB · Updated Feb 26 ◎ 245`.
+
+**Empty state banner:** When no file has been uploaded to the slot, replaces the file information row with an amber/orange tinted banner containing a warning circle icon and the text "No file uploaded yet." This uses a warm, non-alarming color — not red — to signal that the slot exists and is ready, but has no content yet.
+
+**Permanent link row:** Displays the slot's permanent URL in a monospace or code-styled text box with reduced opacity. A copy icon (two overlapping squares) on the right copies the link to clipboard on tap. The URL is truncated if too long but the full URL is copied.
+
+**Action row (bottom):** Contains the primary and secondary actions for the slot:
+- **Primary: "Replace PDF" button** — full-width red button with an upload icon prefix. This is the most important action and dominates the bottom of the card visually. Tapping it opens the device file picker directly.
+- **Secondary: Preview icon button** — a small square icon button (external link / preview icon) placed to the right of the primary button. This opens the viewer in a new tab.
+
+---
+
+#### 4.3.7 Empty Slot State (No File Uploaded)
+
+When a slot exists but has no PDF:
+- The status accent border uses amber/orange instead of green.
+- The tag row shows only the Category tag and a "Draft" or partial status badge — no "PDF Ready" badge.
+- The file information row is replaced by the amber empty state banner described above.
+- The primary action button label changes to **"Upload PDF"** (instead of "Replace PDF") to match the first-time context.
+- The view count is hidden (no views to report yet).
+
+---
+
+#### 4.3.8 Three-Dot Overflow Menu
+
+Each slot card has a three-dot menu (⋯) in the card header. This provides access to secondary actions that should not clutter the card surface:
+
+- Rename slot
+- Archive slot
+- Copy link
+- Download QR code *(v1.1 roadmap — greyed out in v1.0)*
+- Delete slot *(requires confirmation dialog)*
+
+Destructive actions (Delete) must always show a confirmation dialog with plain-language consequences before executing.
+
+---
+
+#### 4.3.9 "+ New Slot" Button
+
+A prominent red button labeled "+ New Slot" is pinned to the top-right of the main content area, adjacent to the page title. It is always visible on the dashboard regardless of scroll position (sticky positioning). Tapping it opens the slot creation flow.
+
+---
+
+#### 4.3.10 Category Tag System
+
+Category tags provide visual organization across the slot grid. The system supports the following default categories, each with a distinct pill color:
+
+| Category | Suggested Color | Use Case |
+|---|---|---|
+| Bulletin | Green | Weekly service bulletin |
+| Newsletter | Blue | Community newsletters |
+| Sermon Notes | Purple | Study guides and sermon materials |
+| Forms | Teal | Applications, registrations |
+| Events | Orange | Event programs and schedules |
+| Announcements | Olive/Green | General notices |
+
+Category colors must meet 4.5:1 contrast ratio against the tag background. The tag background is a light tint of the category color; the text is a dark shade of the same color (not pure white or black, to maintain the color family).
+
+Admins can select a category from a predefined list when creating or editing a slot. Custom categories are a Could Have for v1.1.
+
+---
+
+#### 4.3.11 Upload Flow (from "Replace PDF" Button)
+
+1. Admin taps "Replace PDF" (or "Upload PDF" for a new slot).
+2. Device native file picker opens immediately — no intermediate confirmation screen.
+3. Admin selects a PDF file.
+4. Client-side validation runs before any upload begins: file must be `application/pdf` type and under 20 MB. Violations show an inline error banner on the slot card — not a page-level modal.
+5. Upload begins. The slot card shows a **progress bar replacing the action button**, with a percentage complete indicator. Other cards remain usable during upload.
+6. On success, the interface transitions to the **Success screen** (see Section 4.3.12).
+7. On failure, the slot card shows a plain-language error banner: "The file couldn't be uploaded. Tap to try again." The slot continues to show the previously uploaded file.
+
+---
+
+#### 4.3.12 Success Screen
+
+After a successful upload, the admin is taken to a dedicated success screen:
+
+- Large green checkmark or success illustration (not full-screen modal — a distinct view within the same layout)
+- Slot name and "File Updated!" confirmation headline
+- Permanent viewer URL in a styled code block
+- **"Copy Link"** button — primary action, red
+- **"Share via WhatsApp"** button — secondary action, opens a pre-composed WhatsApp share message:
+  > *"📖 [Slot Name] is ready! Tap the link below to read it — no download needed: [URL] (This link always shows the latest version 🙏)"*
+- **"Back to Dashboard"** link to return to the slot grid
+
+---
+
+#### 4.3.13 Roadmap Indicator in Navigation
+
+Features on the product roadmap that are not yet live must be visibly present in the sidebar navigation, marked with a "Soon" badge. This communicates product vision to admins and manages expectations without implying the features are broken or inaccessible. "Soon" items are non-interactive — they do not navigate to an empty page.
 
 ---
 
@@ -327,6 +533,17 @@ QR codes represent the most natural bridge between the physical church bulletin 
 
 ---
 
+### Version 1.1 — Smart Insights *(Admin Analytics Dashboard)*
+
+Visible as a "Soon" item in the sidebar navigation from day one, this feature surfaces meaningful usage data to admins:
+
+- Per-slot view counts over time (daily, weekly trend)
+- Most-viewed slots in the past 7 days
+- Upload history with timestamps per slot
+- Simple charts — not complex analytics; accessible to non-technical admins
+
+---
+
 ### Version 1.2 — Multi-Admin & Role-Based Access
 
 - Allow one church to have multiple admin accounts with different permissions (e.g., "Liturgy Manager" can only update liturgy slots; "Bulletin Editor" can only update the bulletin slot).
@@ -373,7 +590,12 @@ For deeply visually impaired elderly users, PDF reading is still a barrier. This
 | **WCAG AA / AAA** | Web Content Accessibility Guidelines standards for contrast ratios and accessibility compliance. |
 | **Viewer** | A congregation member who accesses a document slot via its URL. No account or login is required. |
 | **Admin** | A church staff member or volunteer with login access to manage document slots. |
+| **Category Tag** | A color-coded label assigned to a slot to indicate its document type (e.g., Bulletin, Newsletter, Sermon Notes). |
+| **Status Badge** | A visual indicator on a slot card showing whether the slot is Active, Draft, or Archived. |
+| **Draft Status** | A slot state where the slot exists but is not publicly accessible. Used for work-in-progress or scheduled content. |
+| **Summary Stats** | The four aggregate metrics displayed at the top of the dashboard: Total Slots, Active Slots, With Files, Total Views. |
+| **Smart Insights** | A planned v1.1 analytics feature visible as a "Soon" item in the admin sidebar. |
 
 ---
 
-*End of Document — ChurchShare PRD v1.0*
+*End of Document — ChurchShare PRD v1.1*

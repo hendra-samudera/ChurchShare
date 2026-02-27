@@ -10,19 +10,21 @@ export interface WhatsAppShareConfig {
 export class WhatsAppShareService {
   /**
    * Generate pre-composed WhatsApp message
-   * PRD: Warm, plain language, emphasizes link always works
+   * PRD v1.1: Warm, plain language, emphasizes link always works
    */
   generateMessage(config: WhatsAppShareConfig): string {
     const { permanentUrl, documentTitle, customMessage } = config;
-    
+
     if (customMessage) {
       return `${customMessage}\n\n${permanentUrl}`;
     }
 
-    // Default warm message per PRD
-    return `📋 ${documentTitle} is ready!\n\n` +
-      `Read it here (link always works, even next week):\n` +
-      `${permanentUrl}`;
+    // Default warm message per PRD v1.1
+    // Format: "📖 [Slot Name] is ready! Tap the link below to read it — no download needed: [URL] (This link always shows the latest version 🙏)"
+    return `📖 ${documentTitle} is ready!\n\n` +
+      `Tap the link below to read it — no download needed:\n` +
+      `${permanentUrl}\n\n` +
+      `(This link always shows the latest version 🙏)`;
   }
 
   /**

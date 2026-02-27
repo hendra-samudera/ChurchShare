@@ -1,16 +1,24 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Slot } from '@services/mock-data.service';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Slot } from '@models/slot.model';
 import { SlotService } from '@services/slot.service';
 import { ClipboardService } from '@services/clipboard.service';
 import { WhatsAppShareService } from '@services/whatsapp-share.service';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
+import { CategoryTagComponent } from '@shared/ui/category-tag/category-tag.component';
+import { StatusBadgeComponent } from '@shared/ui/status-badge/status-badge.component';
 
 @Component({
   selector: 'app-success-confirmation',
   standalone: true,
-  imports: [ButtonComponent, SpinnerComponent],
+  imports: [
+    RouterLink,
+    ButtonComponent,
+    SpinnerComponent,
+    CategoryTagComponent,
+    StatusBadgeComponent,
+  ],
   template: `
     <main class="success-container">
       <div class="success-card">
@@ -23,41 +31,40 @@ import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 
         <!-- Success Content -->
         @else if (slot()) {
-          <!-- Success Icon -->
+          <!-- Success Header -->
           <div class="success-header">
             <div class="success-icon" aria-hidden="true">✓</div>
-            <h1 class="success-title">Upload Successful!</h1>
+            <h1 class="success-title">File Updated!</h1>
+            <p class="success-subtitle">{{ slot()!.displayName }}</p>
           </div>
 
-          <!-- Document Info -->
-          <section class="document-info">
-            <h2 class="document-title">{{ slot()!.displayName }}</h2>
-            @if (slot()!.lastUpdatedAt) {
-              <p class="document-updated">
-                Updated: {{ formatDate(slot()!.lastUpdatedAt!) }}
-              </p>
-            }
-          </section>
-
-          <!-- PDF Preview Placeholder -->
-          <section class="preview-section">
-            <div class="preview-placeholder">
-              <div class="preview-icon" aria-hidden="true">📄</div>
-              <p class="preview-text">PDF Preview</p>
-              @if (slot()!.originalFilename) {
-                <p class="preview-filename">{{ slot()!.originalFilename }}</p>
-              }
-              @if (slot()!.fileSize) {
-                <p class="preview-size">{{ formatFileSize(slot()!.fileSize!) }}</p>
-              }
+          <!-- Document Info Card -->
+          <section class="document-info-card">
+            <div class="document-header">
+              <span class="document-icon" aria-hidden="true">📄</span>
+              <div class="document-meta">
+                @if (slot()!.originalFilename) {
+                  <p class="document-filename">{{ slot()!.originalFilename }}</p>
+                }
+                @if (slot()!.fileSize) {
+                  <p class="document-size">{{ formatFileSize(slot()!.fileSize!) }}</p>
+                }
+              </div>
+            </div>
+            <div class="document-tags">
+              <app-category-tag [category]="slot()!.category" />
+              <app-status-badge [status]="slot()!.status" />
             </div>
           </section>
 
-          <!-- Permanent Link -->
+          <!-- Permanent Link Section -->
           <section class="link-section">
-            <label class="link-label">Permanent Link (never changes):</label>
+            <label class="link-label">
+              <span class="link-label-icon" aria-hidden="true">🔗</span>
+              Permanent Link (never changes)
+            </label>
             <div class="link-display">
-              <code class="link-url">{{ slot()!.permanentUrl }}</code>
+              <code class="link-url" [title]="slot()!.permanentUrl">{{ slot()!.permanentUrl }}</code>
               <app-button
                 variant="secondary"
                 (clicked)="onCopyLink()"
@@ -65,13 +72,13 @@ import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
                 @if (copySuccess()) {
                   <span aria-hidden="true">✓</span> Copied!
                 } @else {
-                  <span aria-hidden="true">📋</span> Copy Link
+                  <span aria-hidden="true">📋</span> Copy
                 }
               </app-button>
             </div>
           </section>
 
-          <!-- WhatsApp Share -->
+          <!-- WhatsApp Share Section -->
           <section class="share-section">
             <app-button
               variant="primary"
@@ -80,16 +87,16 @@ import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
               <span aria-hidden="true">📱</span>
               Share via WhatsApp
             </app-button>
+            <p class="share-hint">
+              Pre-composed message with the permanent link
+            </p>
           </section>
 
           <!-- Return to Dashboard -->
           <section class="return-section">
-            <app-button
-              variant="secondary"
-              [fullWidth]="true"
-              (clicked)="onReturnToDashboard()">
-              Return to Dashboard
-            </app-button>
+            <a routerLink="/admin/dashboard" class="return-link">
+              ← Back to Dashboard
+            </a>
           </section>
         }
 
@@ -116,126 +123,133 @@ import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
     .success-container {
       min-height: 100vh;
       background-color: var(--color-surface);
-      padding: var(--spacing-md);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .success-card {
-      max-width: 600px;
-      margin: 0 auto;
+      max-width: 520px;
+      width: 100%;
       background-color: var(--color-background);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--spacing-xl);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      padding: 40px 32px;
     }
 
+    /* Loading & Error Sections */
     .loading-section,
     .error-section {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: var(--spacing-xl) 0;
-      gap: var(--spacing-lg);
+      padding: 40px 0;
+      gap: 24px;
     }
 
+    /* Success Header */
     .success-header {
       text-align: center;
-      margin-bottom: var(--spacing-lg);
+      margin-bottom: 32px;
     }
 
     .success-icon {
       width: 80px;
       height: 80px;
-      border-radius: 50%;
+      border-radius: var(--radius-full);
       background-color: var(--color-success);
       color: white;
-      font-size: 3rem;
+      font-size: 2.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto var(--spacing-md);
+      margin: 0 auto 20px;
+      font-weight: 700;
     }
 
     .success-title {
-      font-size: var(--font-size-heading);
+      font-size: 1.75rem;
+      font-weight: 700;
       color: var(--color-text-primary);
-      margin: 0;
+      margin: 0 0 8px 0;
     }
 
-    .document-info {
-      text-align: center;
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .document-title {
-      font-size: var(--font-size-title);
-      color: var(--color-text-primary);
-      margin: 0 0 var(--spacing-xs) 0;
-      font-weight: 600;
-    }
-
-    .document-updated {
-      font-size: var(--font-size-small);
+    .success-subtitle {
+      font-size: 1.125rem;
       color: var(--color-text-secondary);
       margin: 0;
     }
 
-    .preview-section {
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .preview-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: var(--spacing-xl);
+    /* Document Info Card */
+    .document-info-card {
+      padding: 20px;
       background-color: var(--color-surface);
-      border: 2px dashed var(--color-border);
-      border-radius: var(--radius-md);
-      text-align: center;
+      border-radius: var(--radius-lg);
+      margin-bottom: 24px;
     }
 
-    .preview-icon {
-      font-size: 4rem;
-      margin-bottom: var(--spacing-sm);
+    .document-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
     }
 
-    .preview-text {
-      font-size: var(--font-size-body);
-      color: var(--color-text-secondary);
-      font-weight: 500;
-      margin: 0 0 var(--spacing-xs) 0;
+    .document-icon {
+      font-size: 2.5rem;
+      flex-shrink: 0;
     }
 
-    .preview-filename {
-      font-size: var(--font-size-small);
+    .document-meta {
+      min-width: 0;
+    }
+
+    .document-filename {
+      font-size: 1rem;
+      font-weight: 600;
       color: var(--color-text-primary);
-      margin: 0 0 var(--spacing-xs) 0;
-      word-break: break-word;
-    }
-
-    .preview-size {
-      font-size: var(--font-size-small);
-      color: var(--color-text-secondary);
       margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
+    .document-size {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      margin: 4px 0 0 0;
+    }
+
+    .document-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* Link Section */
     .link-section {
-      margin-bottom: var(--spacing-lg);
+      margin-bottom: 24px;
     }
 
     .link-label {
-      display: block;
-      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
       color: var(--color-text-primary);
-      font-size: var(--font-size-body);
-      margin-bottom: var(--spacing-sm);
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    .link-label-icon {
+      font-size: 1.125rem;
     }
 
     .link-display {
       display: flex;
-      gap: var(--spacing-sm);
+      gap: 12px;
       align-items: stretch;
     }
 
@@ -243,45 +257,77 @@ import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
       flex: 1;
       display: flex;
       align-items: center;
-      padding: var(--spacing-sm) var(--spacing-md);
+      padding: 12px 16px;
       background-color: var(--color-surface);
-      border: 1px solid var(--color-border);
+      border: 2px solid var(--color-border);
       border-radius: var(--radius-md);
-      font-size: var(--font-size-small);
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
       word-break: break-all;
-      min-height: var(--tap-target-min);
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
+      min-height: 48px;
     }
 
+    /* Share Section */
     .share-section {
-      margin-bottom: var(--spacing-md);
+      margin-bottom: 24px;
     }
 
+    .share-hint {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      text-align: center;
+      margin: 12px 0 0 0;
+    }
+
+    /* Return Section */
     .return-section {
-      padding-top: var(--spacing-md);
+      padding-top: 24px;
       border-top: 1px solid var(--color-border);
+      text-align: center;
     }
 
+    .return-link {
+      font-size: 1rem;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color var(--transition-fast);
+    }
+
+    .return-link:hover {
+      color: var(--color-text-primary);
+      text-decoration: underline;
+    }
+
+    /* Error State */
     .error-icon-large {
-      font-size: 4rem;
+      font-size: 3rem;
     }
 
     .error-title {
-      font-size: var(--font-size-heading);
+      font-size: 1.5rem;
+      font-weight: 600;
       color: var(--color-text-primary);
       margin: 0;
     }
 
     .error-message {
-      font-size: var(--font-size-body);
+      font-size: 1rem;
       color: var(--color-text-secondary);
       margin: 0;
       text-align: center;
-      max-width: 400px;
+      max-width: 320px;
     }
 
+    /* Responsive */
     @media (max-width: 480px) {
+      .success-container {
+        padding: 16px;
+      }
+
       .success-card {
-        padding: var(--spacing-lg);
+        padding: 32px 24px;
       }
 
       .link-display {
@@ -352,17 +398,6 @@ export class SuccessConfirmationComponent implements OnInit {
 
   onReturnToDashboard(): void {
     this.router.navigate(['/admin/dashboard']);
-  }
-
-  formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
   }
 
   formatFileSize(bytes: number): string {
