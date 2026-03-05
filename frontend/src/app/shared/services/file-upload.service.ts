@@ -1,6 +1,9 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpEventType, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { MockDataService } from './mock-data.service';
+import { map, catchError } from 'rxjs/operators';
+import { Slot } from '@models/slot.model';
+import { environment } from '@environments/environment';
 
 export interface UploadProgress {
   type: 'progress';
@@ -36,14 +39,13 @@ export interface UploadValidationResult {
 
 @Injectable({ providedIn: 'root' })
 export class FileUploadService {
-  private readonly mockData = inject(MockDataService);
-  
+  private readonly http = inject(HttpClient);
+
   private readonly MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB per PRD
   private readonly ALLOWED_TYPES = ['application/pdf'];
 
   /**
-   * Validate file before upload
-   * Returns synchronously - no network call
+   * Validate file before upload - no network call
    */
   validateFile(file: File): UploadValidationResult {
     if (file.size === 0) {
@@ -80,71 +82,57 @@ export class FileUploadService {
   }
 
   /**
-   * Upload file to slot with simulated progress
-   * Uses setTimeout to simulate real upload progress
+   * Upload file to slot with real progress tracking
    */
   uploadToSlot(slotId: string, file: File): Observable<UploadEvent> {
-    return new Observable<UploadEvent>(observer => {
-      let progress = 0;
-      const total = file.size;
-      
-      // Simulate upload progress in chunks
-      const interval = setInterval(() => {
-        // Random progress increment (20-40% per interval)
-        const increment = Math.random() * 20 + 20;
-        progress = Math.min(progress + increment, 100);
-        
-        const loaded = Math.floor((progress / 100) * total);
-        
-        observer.next({
-          type: 'progress',
-          loaded,
-          total,
-          percentage: Math.round(progress),
-        });
+    const formData = new FormData();
+    formData.append('file', file);
 
-        if (progress >= 100) {
-          clearInterval(interval);
-          
-          // Simulate final processing delay
-          setTimeout(() => {
-            const now = new Date().toISOString();
-            
-            // Update mock data
-            this.mockData.updateSlot(slotId, {
-              hasFile: true,
-              lastUpdatedAt: now,
-              lastUpdatedBy: 'Admin User',
-              fileSize: file.size,
-              originalFilename: file.name,
-            });
+    const url = `${environment.apiUrl}/admin/slots/${slotId}/upload`;
 
-            const slot = this.mockData.getSlotById(slotId);
-            
-            observer.next({
-              type: 'success',
-              slotId,
-              permanentUrl: slot?.permanentUrl || '',
-              fileName: file.name,
-              fileSize: file.size,
-              uploadedAt: now,
-            });
-            
+    return this.http
+      .post<Slot>(url, formData, {
+        reportProgress: true,
+        observe: 'events',
+      })
+      .pipe(
+        map((event): UploadEvent => {
+          switch (event.type) {
+            case HttpEventType.UploadProgress: {
+              const total = event.total ?? file.size;
+              const loaded = event.loaded;
+              return {
+                type: 'progress',
+                loaded,
+                total,
+                percentage: Math.round((loaded / total) * 100),
+              };
+            }
+            case HttpEventType.Response: {
+              const slot = event.body;
+              return {
+                type: 'success',
+                slotId,
+                permanentUrl: slot?.permanentUrl ?? '',
+                fileName: file.name,
+                fileSize: file.size,
+                uploadedAt: slot?.lastUpdatedAt ?? new Date().toISOString(),
+              };
+            }
+            default:
+              return { type: 'progress', loaded: 0, total: file.size, percentage: 0 };
+          }
+        }),
+        catchError((err: HttpErrorResponse) => {
+          const message = err.error?.message || 'Upload failed. Please try again.';
+          return new Observable<UploadEvent>((observer) => {
+            observer.next({ type: 'error', message, code: `HTTP_${err.status}` });
             observer.complete();
-          }, 500);
-        }
-      }, 300); // Update every 300ms
-
-      // Cleanup function for cancellation
-      return () => {
-        clearInterval(interval);
-      };
-    });
+          });
+        })
+      );
   }
 
-  /**
-   * Get human-readable file size
-   */
   private formatFileSize(bytes: number): string {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
