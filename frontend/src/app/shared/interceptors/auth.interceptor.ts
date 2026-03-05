@@ -1,24 +1,31 @@
 import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
+
+const TOKEN_KEY = 'churchshare_token';
+const USER_KEY = 'churchshare_user';
 
 /**
  * HTTP Interceptor for JWT Authentication
  *
- * NOTE: For mock implementation, JWT is simulated.
- * In production, JWT will be stored in httpOnly cookie by backend.
- * 
- * Purpose:
- * - Handle 401 errors (session expired)
- * - Redirect to login when authentication fails
+ * Attaches Bearer token to outgoing API requests and
+ * handles 401 responses by clearing auth state and redirecting to login.
  */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  return next(req).pipe(
+  const router = inject(Router);
+  const token = localStorage.getItem(TOKEN_KEY);
+
+  const authReq = token
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    : req;
+
+  return next(authReq).pipe(
     catchError((error) => {
       if (error.status === 401) {
-        // Session expired - redirect to login
-        // TODO: Implement AuthService and redirect logic
-        console.warn('Session expired. Redirecting to login...');
-        // authService.handleSessionExpired();
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        router.navigate(['/admin/login']);
       }
       return throwError(() => error);
     })

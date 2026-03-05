@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { Slot } from './mock-data.service';
-import { MockDataService } from './mock-data.service';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { Slot } from '@models/slot.model';
+import { environment } from '@environments/environment';
 
 /**
  * Service for fetching slot data for the public viewer
@@ -8,35 +10,31 @@ import { MockDataService } from './mock-data.service';
  */
 @Injectable({ providedIn: 'root' })
 export class SlotFetchService {
-  private readonly mockData = inject(MockDataService);
+  private readonly http = inject(HttpClient);
 
   /**
    * Fetch slot by slug (public endpoint)
    */
   async fetchSlot(slug: string): Promise<Slot | null> {
-    // Simulate network delay
-    await this.mockData.simulateDelay(500);
-
-    const slot = this.mockData.getSlotBySlug(slug);
-    
-    if (!slot) {
-      return null;
+    try {
+      return await firstValueFrom(
+        this.http.get<Slot>(`${environment.apiUrl}/slots/${slug}`)
+      );
+    } catch (err) {
+      if (err instanceof HttpErrorResponse && err.status === 404) {
+        return null;
+      }
+      throw err;
     }
-
-    return slot;
   }
 
   /**
-   * Get PDF file URL for a slot
-   * In real implementation, this would return a presigned URL from backend
+   * Get PDF file download URL for a slot
    */
   getPdfUrl(slot: Slot): string | null {
     if (!slot.hasFile) {
       return null;
     }
-
-    // For demo purposes, return a sample PDF URL
-    // In production, this would be: /api/v1/slots/{slug}/file
-    return 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2a1d6c08d7f0f6e0c8f8e0e0e0e0e0e0e0e0e0/web/compressed.tracemonkey-pldi-09.pdf';
+    return `${environment.apiUrl}/slots/${slot.slug}/file`;
   }
 }
