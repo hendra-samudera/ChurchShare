@@ -33,7 +33,7 @@ public class AuthService {
         );
 
         AdminUser user = adminUserRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + request.email()));
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
         String token = jwtTokenProvider.generateToken(user.getEmail());
 
