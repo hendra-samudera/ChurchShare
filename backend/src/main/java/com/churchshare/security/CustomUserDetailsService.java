@@ -20,8 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         var adminUser = adminUserRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                        "User not found with email: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid credentials"));
 
         return new User(
                 adminUser.getEmail(),

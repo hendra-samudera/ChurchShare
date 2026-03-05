@@ -54,28 +54,21 @@ public class SecurityConfig {
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         var configuration = new CorsConfiguration();
-
-        List<String> origins = Arrays.stream(corsProperties.getAllowedOrigins().split(","))
-                .map(String::trim)
-                .toList();
-        configuration.setAllowedOrigins(origins);
-
-        List<String> methods = Arrays.stream(corsProperties.getAllowedMethods().split(","))
-                .map(String::trim)
-                .toList();
-        configuration.setAllowedMethods(methods);
-
-        List<String> headers = Arrays.stream(corsProperties.getAllowedHeaders().split(","))
-                .map(String::trim)
-                .toList();
-        configuration.setAllowedHeaders(headers);
-
+        configuration.setAllowedOrigins(splitCsv(corsProperties.getAllowedOrigins()));
+        configuration.setAllowedMethods(splitCsv(corsProperties.getAllowedMethods()));
+        configuration.setAllowedHeaders(splitCsv(corsProperties.getAllowedHeaders()));
         configuration.setAllowCredentials(corsProperties.isAllowCredentials());
         configuration.setMaxAge(corsProperties.getMaxAge());
 
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private List<String> splitCsv(String value) {
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .toList();
     }
 
     @Bean

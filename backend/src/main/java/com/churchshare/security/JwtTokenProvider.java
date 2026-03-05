@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,19 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
+    private static final int MIN_KEY_LENGTH_BYTES = 32;
+
     private final JwtProperties jwtProperties;
+
+    @PostConstruct
+    void validateKey() {
+        byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length < MIN_KEY_LENGTH_BYTES) {
+            throw new IllegalStateException(
+                    "JWT secret must be at least %d bytes (256 bits) for HMAC-SHA256; got %d bytes"
+                            .formatted(MIN_KEY_LENGTH_BYTES, keyBytes.length));
+        }
+    }
 
     public String generateToken(String email) {
         var now = new Date();
