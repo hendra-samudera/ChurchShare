@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DocumentSlotRepository extends JpaRepository<DocumentSlot, Long> {
+    Optional<DocumentSlot> findFirstBySlug(String slug);
     Optional<DocumentSlot> findByChurchIdAndSlug(Long churchId, String slug);
     List<DocumentSlot> findByChurchId(Long churchId);
     List<DocumentSlot> findByChurchIdAndStatus(Long churchId, String status);
