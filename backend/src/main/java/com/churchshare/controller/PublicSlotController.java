@@ -59,8 +59,11 @@ public class PublicSlotController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
+        String safeFilename = slot.getOriginalFilename() != null
+                ? slot.getOriginalFilename().replaceAll("[^a-zA-Z0-9._-]", "_")
+                : "document.pdf";
         headers.set(HttpHeaders.CONTENT_DISPOSITION,
-                "inline; filename=\"" + slot.getOriginalFilename() + "\"");
+                "inline; filename=\"" + safeFilename + "\"");
         // Per PRD: no-store ensures browsers always fetch the current version
         headers.setCacheControl("no-store");
 

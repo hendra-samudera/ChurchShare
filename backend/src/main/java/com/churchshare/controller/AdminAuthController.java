@@ -31,7 +31,7 @@ public class AdminAuthController {
             LoginResponse response = authService.login(request);
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException ex) {
-            log.warn("Login failed for email: {}", request.email());
+            log.warn("Login attempt failed");
             ErrorResponse error = new ErrorResponse(
                     HttpStatus.UNAUTHORIZED.value(),
                     "Unauthorized",
