@@ -99,6 +99,16 @@ storage:
   presign-duration-minutes: 15
 
 # =============================================================================
+# CORS Configuration
+# =============================================================================
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
+  allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,OPTIONS}
+  allowed-headers: ${CORS_ALLOWED_HEADERS:*}
+  allow-credentials: ${CORS_ALLOW_CREDENTIALS:true}
+  max-age: ${CORS_MAX_AGE:3600}
+
+# =============================================================================
 # Actuator Configuration
 # =============================================================================
 management:
